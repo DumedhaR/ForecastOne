@@ -1,0 +1,19 @@
+# Build folders
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+
+# Runtime files
+*.exe
+*.dll
+*.pdb
+
+# App settings (if sensitive)
+appsettings.*.json
