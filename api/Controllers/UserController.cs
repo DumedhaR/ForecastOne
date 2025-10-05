@@ -6,6 +6,7 @@ using api.Data;
 using api.Dtos;
 using api.Mappers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Controllers
 {
@@ -21,16 +22,17 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var users = _context.Users.ToList().Select(s => s.ToUserDto());
-            return Ok(users);
+            var users = await _context.Users.ToListAsync();
+            var userDtos = users.Select(s => s.ToUserDto());
+            return Ok(userDtos);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById([FromRoute] int id)
+        public async Task<IActionResult> GetById([FromRoute] int id)
         {
-            var user = _context.Users.Find(id);
+            var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound();
@@ -39,19 +41,19 @@ namespace api.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] CreateUserRequestDto userDto)
+        public async Task<IActionResult> Create([FromBody] CreateUserRequestDto userDto)
         {
             var userModel = userDto.ToUserModel();
-            _context.Users.Add(userModel);
-            _context.SaveChanges();
+            await _context.Users.AddAsync(userModel);
+            await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetById), new { id = userModel.Id }, userModel.ToUserDto());
 
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update([FromRoute] int id, [FromBody] UpdateUserRequestDto userDto)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateUserRequestDto userDto)
         {
-            var userModel = _context.Users.FirstOrDefault(s => s.Id == id);
+            var userModel = await _context.Users.FirstOrDefaultAsync(s => s.Id == id);
 
             if (userModel == null)
             {
@@ -59,14 +61,14 @@ namespace api.Controllers
             }
 
             userModel.UpdateUserModel(userDto);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return Ok(userModel.ToUserDto());
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete([FromRoute] int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var userModel = _context.Users.FirstOrDefault(s => s.Id == id);
+            var userModel = await _context.Users.FirstOrDefaultAsync(s => s.Id == id);
 
             if (userModel == null)
             {
@@ -74,7 +76,7 @@ namespace api.Controllers
             }
 
             _context.Users.Remove(userModel);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return NoContent();
         }
     }

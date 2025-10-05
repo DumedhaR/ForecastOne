@@ -9,9 +9,7 @@ namespace api.Models
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string Picture { get; set; } = string.Empty;
-
         public List<int> FavoriteCityIds { get; set; } = new();
-
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     }
