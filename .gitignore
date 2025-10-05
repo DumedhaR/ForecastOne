@@ -17,3 +17,5 @@ obj/
 
 # App settings (if sensitive)
 appsettings.*.json
+
+.fake
