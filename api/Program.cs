@@ -1,6 +1,8 @@
 using api.Data;
 using api.Repositories;
 using api.Repositories.Interfaces;
+using api.Services;
+using api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -9,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container
 builder.Services.AddControllers();
 
-// Add minimal API & Swagger support
+// Add Swagger support
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -27,6 +29,8 @@ builder.Services.AddDbContext<AppDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+// Config dependency injection
+builder.Services.AddSingleton<ICityService, CityService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var app = builder.Build();
@@ -42,6 +46,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Enable controller endpoints
 app.MapControllers();
 
 var summaries = new[]
