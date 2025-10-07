@@ -1,33 +1,31 @@
 import { WiDayCloudy } from "react-icons/wi";
-import LoginButton from "../components/LoginButton";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import LoadingSping from "../components/LoadingSpin";
+import GetStartButton from "../components/GetStartButton";
+// import { useEffect } from "react";
+// import { useNavigate } from "react-router-dom";
+// import LoadingSping from "../components/LoadingSpin";
 
 const LandingPage = () => {
-  const { isAuthenticated, isLoading } = useAuth0();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!isLoading) {
-      if (isAuthenticated) {
-        navigate("/weather");
-      }
-    }
-  }, [isAuthenticated, isLoading, navigate]);
+  // useEffect(() => {
+  //   if (!isLoading) {
+  //     if (isAuthenticated) {
+  //       navigate("/weather");
+  //     }
+  //   }
+  // }, [isAuthenticated, isLoading, navigate]);
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center w-screen h-screen">
-        <LoadingSping />
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex justify-center items-center w-screen h-screen">
+  //       <LoadingSping />
+  //     </div>
+  //   );
+  // }
 
-  if (isAuthenticated) {
-    return null;
-  }
+  // if (isAuthenticated) {
+  //   return null;
+  // }
 
   return (
     <div
@@ -35,12 +33,12 @@ const LandingPage = () => {
       from-blue-600 via-indigo-600 to-violet-600 text-white"
     >
       <WiDayCloudy className="text-8xl md:text-9xl font-semibold" />
-      <h2 className="text-4xl md:text-5xl font-semibold ">Welcome to</h2>
-      <h1 className="text-6xl md:text-7xl font-semibold ">Weather App</h1>
-      <p className="text-md md:text-lg mt-5">
+      <h2 className="text-4xl md:text-5xl font-semibold">Welcome to</h2>
+      <h1 className="text-6xl md:text-7xl font-semibold mb-6">ForecastOne</h1>
+      <p className="text-md md:text-lg mb-12">
         Check the Latest Weather Updates <br /> Anytime, Anywhere
       </p>
-      <LoginButton />
+      <GetStartButton />
     </div>
   );
 };

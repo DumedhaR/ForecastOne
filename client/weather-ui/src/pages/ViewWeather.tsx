@@ -1,44 +1,42 @@
-import { useWeather } from "../hooks/useWeather";
+// import { useWeather } from "../hooks/useWeather";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { type WeatherRecord } from "../types/weatherData";
-import { getWeatherByCity } from "../services/weatherService";
-import { useAuth0 } from "@auth0/auth0-react";
+// import { getWeatherByCity } from "../services/weatherService";
 import LoadingSping from "../components/LoadingSpin";
 import arrowIcon from "../assets/icons/Arrow4x.svg";
 import { FiArrowLeft } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import { AUTH0_AUDIENCE } from "../config";
 
 const ViewWeather = () => {
   const { cityId } = useParams<{ cityId: string }>();
-  const { weatherData } = useWeather();
+  // const { weatherData } = useWeather();
   const [weatherView, setWeatherView] = useState<WeatherRecord | null>(null);
-  const { getAccessTokenSilently } = useAuth0();
-  useEffect(() => {
-    if (!cityId) return;
 
-    const fetchWeather = async () => {
-      const record = weatherData.find((r) => r.id === Number(cityId));
-      if (record) {
-        setWeatherView(record);
-      } else {
-        try {
-          const accessToken = await getAccessTokenSilently({
-            authorizationParams: {
-              audience: AUTH0_AUDIENCE,
-            },
-          });
-          const data = await getWeatherByCity(accessToken, cityId);
-          setWeatherView(data);
-        } catch (err) {
-          console.error("Failed to load weather forecast data:", err);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   if (!cityId) return;
 
-    fetchWeather();
-  }, [cityId, weatherData, getAccessTokenSilently]);
+  //   const fetchWeather = async () => {
+  //     const record = weatherData.find((r) => r.id === Number(cityId));
+  //     if (record) {
+  //       setWeatherView(record);
+  //     } else {
+  //       try {
+  //         const accessToken = await getAccessTokenSilently({
+  //           authorizationParams: {
+  //             audience: AUTH0_AUDIENCE,
+  //           },
+  //         });
+  //         const data = await getWeatherByCity(accessToken, cityId);
+  //         setWeatherView(data);
+  //       } catch (err) {
+  //         console.error("Failed to load weather forecast data:", err);
+  //       }
+  //     }
+  //   };
+
+  //   fetchWeather();
+  // }, [cityId, weatherData, getAccessTokenSilently]);
 
   if (!weatherView) {
     return <LoadingSping />;

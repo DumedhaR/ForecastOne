@@ -9,7 +9,8 @@ import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import MainLayout from "./layouts/MainLayout";
 import ViewWeather from "./pages/ViewWeather";
-import ProtectedRoute from "./components/ProtectedRoute";
+import SignInPage from "./pages/SignInPage";
+// import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -17,16 +18,8 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-
-          <Route
-            path="/weather"
-            element={
-              <ProtectedRoute>
-                <MainLayout />
-                {/* only for logged in users */}
-              </ProtectedRoute>
-            }
-          >
+          <Route path="/signIn" element={<SignInPage />} />
+          <Route path="/weather" element={<MainLayout />}>
             <Route index element={<Dashboard />} />
             <Route path=":cityId" element={<ViewWeather />} />
           </Route>

@@ -2,13 +2,11 @@ import * as React from "react";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { useAuth0 } from "@auth0/auth0-react";
 import Avatar from "@mui/material/Avatar";
 
 export default function ProfileMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const { user, logout } = useAuth0();
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -27,7 +25,7 @@ export default function ProfileMenu() {
         aria-expanded={open ? "true" : undefined}
         onClick={handleClick}
       >
-        <Avatar src={user?.picture} alt={user?.name} />
+        <Avatar src="" alt="" />
       </Button>
 
       <Menu
@@ -45,13 +43,7 @@ export default function ProfileMenu() {
         }}
       >
         <MenuItem onClick={handleClose}>Profile</MenuItem>
-        <MenuItem
-          onClick={() =>
-            logout({ logoutParams: { returnTo: window.location.origin } })
-          }
-        >
-          Logout
-        </MenuItem>
+        <MenuItem>Logout</MenuItem>
       </Menu>
     </div>
   );
