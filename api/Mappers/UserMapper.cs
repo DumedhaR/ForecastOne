@@ -29,7 +29,6 @@ namespace api.Mappers
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,
                 Email = userDto.Email,
-                Password = userDto.Password,
                 Picture = userDto.Picture,
                 FavoriteCityIds = userDto.FavoriteCityIds,
 

@@ -1,3 +1,5 @@
+# === .NET backend ===
+
 # Build folders
 bin/
 obj/
@@ -15,7 +17,47 @@ obj/
 *.dll
 *.pdb
 
-# App settings (if sensitive)
-appsettings.*.json
+# App settings (sensitive)
+**/appsettings.*.json
+!**/appsettings.Development.json 
 
+# Misc
 .fake
+
+# === React / Frontend Client ===
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependency directories
+node_modules/
+dist/
+build/
+dist-ssr/
+
+# Local configs and cache
+*.local
+.cache/
+*.tsbuildinfo
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env
+.env.*
+!.env.example 

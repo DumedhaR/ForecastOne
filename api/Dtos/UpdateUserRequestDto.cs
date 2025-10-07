@@ -8,11 +8,10 @@ namespace api.Dtos
 {
     public class UpdateUserRequestDto
     {
-        [StringLength(50, ErrorMessage = "First name cannot exceed 50 characters.")]
+        [StringLength(20, ErrorMessage = "First name cannot exceed 20 characters.")]
         public string? FirstName { get; set; }
 
-        [StringLength(50, ErrorMessage = "Last name cannot exceed 50 characters.")]
-
+        [StringLength(20, ErrorMessage = "Last name cannot exceed 20 characters.")]
         public string? LastName { get; set; }
 
         public string? Picture { get; set; }
