@@ -4,6 +4,8 @@ using api.Repositories.Interfaces;
 using api.Services;
 using api.Services.Interfaces;
 using api.Settings;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -12,6 +14,34 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
+
+// Add authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+.AddCookie()
+.AddGoogle(googleOptions =>
+{
+    var clientId = builder.Configuration["Authentication:Google:ClientId"];
+    var clientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+    if (clientId == null)
+    {
+        throw new ArgumentNullException(nameof(clientId));
+    }
+    if (clientSecret == null)
+    {
+        throw new ArgumentNullException(nameof(clientSecret));
+    }
+
+    googleOptions.ClientId = clientId;
+    googleOptions.ClientSecret = clientSecret;
+    googleOptions.Scope.Add("openid");
+    googleOptions.Scope.Add("profile");
+    googleOptions.Scope.Add("email");
+});
+
 
 // Add IHttpClient
 builder.Services.Configure<OpenWeatherMapSettings>(
@@ -62,6 +92,9 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "ForecastOne API v1");
     });
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 
