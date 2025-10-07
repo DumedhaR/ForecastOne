@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using api.Services;
+using api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -11,42 +11,40 @@ namespace api.Controllers
     [ApiController]
     public class WeatherController : ControllerBase
     {
-        private readonly WeatherService _weatherService;
+        private readonly IWeatherService _weatherService;
 
-        public WeatherController(WeatherService weatherService)
+        public WeatherController(IWeatherService weatherService)
         {
             _weatherService = weatherService;
         }
 
-
-        [HttpGet("{cityId}")]
-        public async Task<IActionResult> GetWeatherByCity(string cityId)
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-            var result = await _weatherService.GetWeatherByCityAsync(cityId);
+            var result = await _weatherService.GetAllWeather();
 
-            if (result.GetType().GetProperty("error") != null)
-                return StatusCode(500, result);
+            if (result == null)
+            {
+                return NotFound();
+            }
 
             return Ok(result);
         }
 
-        // [HttpGet]
-        // public async Task<IActionResult> GetAllWeather([FromQuery] int page = 1, [FromQuery] int limit = 10)
-        // {
-        //     var allCityCodes = "";
 
-        //     var weatherData = await _weatherService.GetAllWeatherAsync(allCityCodes);
 
-        //     // Pagination
-        //     var paged = weatherData.Skip((page - 1) * limit).Take(limit).ToList();
+        [HttpGet("{cityId:int}")]
+        public async Task<IActionResult> GetByCityId([FromRoute] int cityId)
+        {
+            var result = await _weatherService.GetWeatherByCityId(cityId);
 
-        //     return Ok(new
-        //     {
-        //         status = "success",
-        //         results = paged.Count,
-        //         data = paged
-        //     });
-        // }
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
 
     }
 }

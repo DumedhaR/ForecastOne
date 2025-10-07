@@ -2,54 +2,75 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Dtos;
+using api.Services.Interfaces;
+using api.Settings;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 
 namespace api.Services
 {
-    public class WeatherService
+    public class WeatherService : IWeatherService
     {
         private readonly HttpClient _httpClient;
+        private readonly OpenWeatherMapSettings _settings;
         private readonly IMemoryCache _cache;
-        private readonly string _apiKey;
+        private readonly ICityService _cityService;
 
-        public WeatherService(HttpClient httpClient, IMemoryCache cache, IConfiguration config)
+        public WeatherService(
+            HttpClient httpClient,
+            IOptions<OpenWeatherMapSettings> options,
+            IMemoryCache cache,
+            ICityService cityService)
         {
             _httpClient = httpClient;
+            _settings = options.Value;
             _cache = cache;
-            _apiKey = config["OPENWEATHER_API_KEY"] ?? throw new Exception("API key missing");
+            _cityService = cityService;
         }
 
-        public async Task<object> GetWeatherByCityAsync(string cityCode)
+        public async Task<WeatherResult?> GetWeatherByCityId(int id)
         {
-            if (_cache.TryGetValue(cityCode, out object? cachedData))
+            var cacheKey = $"weather_{id}";
+            if (_cache.TryGetValue(cacheKey, out object? cachedData))
             {
-                return new { cityCode, weatherData = cachedData, fromCache = true };
+                return new WeatherResult { CityId = id, Source = "Cache", Data = cachedData };
             }
-
-            var url = $"https://api.openweathermap.org/data/2.5/weather?id={cityCode}&units=metric&appid={_apiKey}";
-
+            var url = $"weather?id={id}&units=metric&appid={_settings.ApiKey}";
             try
             {
                 var response = await _httpClient.GetFromJsonAsync<object>(url);
-
                 if (response != null)
-                    _cache.Set(cityCode, response, TimeSpan.FromMinutes(5));
+                {
+                    _cache.Set(cacheKey, response, TimeSpan.FromMinutes(5));
+                    return new WeatherResult { CityId = id, Source = "API", Data = response };
+                }
 
-                return new { cityCode, weatherData = response, fromCache = false };
+                return null;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine($"Error fetching city {cityCode}: {ex.Message}");
-                return new { cityCode, error = "Failed to fetch weather data" };
+                return null;
             }
         }
 
-        public async Task<List<object>> GetAllWeatherAsync(IEnumerable<string> cityCodes)
+        public async Task<List<WeatherResult>?> GetAllWeather()
         {
-            var tasks = cityCodes.Select(code => GetWeatherByCityAsync(code));
+            var cities = _cityService.GetAllCityCodes();
+
+            var tasks = cities.Select(id => GetWeatherByCityId(int.Parse(id))).ToList();
+
             var results = await Task.WhenAll(tasks);
-            return results.ToList();
+
+            var success = results.Where(r => r != null).ToList();
+
+            if (success.Count == 0)
+            {
+                return null;
+            }
+
+            return success!;
         }
     }
 }
