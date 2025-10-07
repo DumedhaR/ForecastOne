@@ -4,7 +4,7 @@ interface GoogleLoginButtonProps {
 }
 
 const GoogleLoginButton = ({ className = "" }: GoogleLoginButtonProps) => {
-  const authUrl = `${API_BASE_URL}/api/user/auth/google`;
+  const authUrl = `${API_BASE_URL}/api/auth/google/signin`;
   return (
     <a
       href={authUrl}
