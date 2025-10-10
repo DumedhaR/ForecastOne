@@ -18,8 +18,9 @@ obj/
 *.pdb
 
 # App settings (sensitive)
+**/appsettings.json
 **/appsettings.*.json
-!**/appsettings.Development.json 
+**/appsettings.Development.json 
 
 # Misc
 .fake

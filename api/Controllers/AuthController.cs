@@ -6,6 +6,7 @@ using api.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -14,40 +15,45 @@ namespace api.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
-
-        public AuthController(IUserRepository userRepository)
-        {
-            _userRepository = userRepository;
-        }
 
         [HttpGet("google/signin")]
-        public IActionResult GoogleLogin(string returnUrl = "/api/auth/google/callback")
+        public IActionResult GoogleLogin()
         {
             var properties = new AuthenticationProperties
             {
-                RedirectUri = returnUrl
+                RedirectUri = Url.Action(nameof(GoogleCallback), "Auth", null, Request.Scheme)
             };
 
             // Challenge Google authentication
-            return Challenge(properties, "Google");
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
         [HttpGet("google/callback")]
         public async Task<IActionResult> GoogleCallback()
         {
-            var authenticateResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            // Authenticate using middleware
+            var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
 
-            if (!authenticateResult.Succeeded)
-            {
-                return Redirect("http://localhost:5173/signIn");
-            }
-            var claims = authenticateResult.Principal.Claims;
-            Console.WriteLine(claims);
+            if (!result.Succeeded)
+                return Unauthorized("Google authentication failed");
 
-            // Redirect to frontend dashboard
+            var user = result.Principal;
+
+            // Extract claims
+            var subId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var email = user.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            var firstName = user.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value;
+            var lastName = user.FindFirst(System.Security.Claims.ClaimTypes.Surname)?.Value;
+
+            Console.WriteLine($"SubId: {subId}");
+            Console.WriteLine($"Email: {email}");
+            Console.WriteLine($"First Name: {firstName}");
+            Console.WriteLine($"Last Name: {lastName}");
+
+            // Redirect frontend with JWT
             return Redirect("http://localhost:5173/weather");
         }
+
 
     }
 }

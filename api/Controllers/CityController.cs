@@ -23,7 +23,7 @@ namespace api.Controllers
         [HttpGet]
         public ActionResult<List<City>> GetAllCities()
         {
-            var cities = _cityService.GetAllCities();
+            var cities = _cityService.GetAll();
             return Ok(cities);
         }
 
@@ -36,12 +36,12 @@ namespace api.Controllers
         }
 
         // GET: api/city/{code}
-        [HttpGet("{code}")]
-        public ActionResult<City> GetCityByCode(string code)
+        [HttpGet("{id}")]
+        public ActionResult<City> GetCityByCode(int id)
         {
-            var city = _cityService.GetCityByCode(code);
+            var city = _cityService.GetById(id);
             if (city == null)
-                return NotFound($"City with code {code} not found.");
+                return NotFound($"City with code {id} not found.");
 
             return Ok(city);
         }

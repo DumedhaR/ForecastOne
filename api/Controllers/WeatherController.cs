@@ -31,8 +31,6 @@ namespace api.Controllers
             return Ok(result);
         }
 
-
-
         [HttpGet("{cityId:int}")]
         public async Task<IActionResult> GetByCityId([FromRoute] int cityId)
         {

@@ -1,14 +1,18 @@
 import GoogleLoginButton from "../components/GoogleSignIn";
+import FadeSlider from "../components/FadeSlider";
+
+const images = [
+  "/images/cover1.jpg",
+  "/images/cover2.jpg",
+  "/images/cover3.jpg",
+  "/images/cover4.jpg",
+];
 
 export default function SignInPage() {
   return (
     <div className="h-screen grid grid-cols-2">
       <div className="bg-gray-100 h-screen">
-        <img
-          src="/images/cover1.jpg"
-          alt="Visual"
-          className="w-full h-full object-cover"
-        />
+        <FadeSlider images={images} />
       </div>
 
       <div className="flex flex-col justify-center items-center h-screen">

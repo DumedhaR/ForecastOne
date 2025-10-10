@@ -46,7 +46,7 @@ namespace api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateUserRequestDto userDto)
+        public async Task<IActionResult> Create([FromBody] CreateUserDto userDto)
         {
             if (!ModelState.IsValid)
             {
@@ -60,7 +60,7 @@ namespace api.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateUserRequestDto userDto)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateUserDto userDto)
         {
             if (!ModelState.IsValid)
             {
@@ -87,6 +87,34 @@ namespace api.Controllers
                 return NotFound();
             }
             return NoContent();
+        }
+
+        [HttpPost("fav/cities")]
+        public async Task<IActionResult> AddFavoriteCity([FromBody] int cityId)
+        {
+            var userId = 1;
+            var userModel = await _userRepo.AddFavoriteCityAsync(userId, cityId);
+
+            if (userModel == null)
+            {
+                return NotFound();
+            }
+            return Ok(userModel);
+
+        }
+
+        [HttpDelete("fav/cities")]
+        public async Task<IActionResult> DeleteFavoriteCity([FromBody] int cityId)
+        {
+            var userId = 1;
+            var userModel = await _userRepo.DeleteFavoriteCityAsync(userId, cityId);
+
+            if (userModel == null)
+            {
+                return NotFound();
+            }
+            return Ok(userModel);
+
         }
     }
 }

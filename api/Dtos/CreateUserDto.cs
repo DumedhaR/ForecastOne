@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace api.Dtos
 {
-    public class CreateUserRequestDto
+    public class CreateUserDto
     {
         [Required(ErrorMessage = "First name is required.")]
         [StringLength(20, ErrorMessage = "First name cannot exceed 20 characters.")]

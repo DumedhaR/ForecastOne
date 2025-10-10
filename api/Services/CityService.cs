@@ -27,20 +27,20 @@ namespace api.Services
                 Environment.Exit(1); // fail fast as it critical req
             }
         }
-        public List<City> GetAllCities()
+        public List<City> GetAll()
         {
             return _cities;
         }
 
-        public List<string> GetAllCityCodes()
+        public List<int> GetAllCityCodes()
         {
-            var cityCodes = _cities.Select(c => c.CityCode).ToList();
+            var cityCodes = _cities.Select(c => c.Id).ToList();
             return cityCodes;
         }
 
-        public City? GetCityByCode(string code)
+        public City? GetById(int id)
         {
-            var city = _cities.FirstOrDefault(c => c.CityCode == code);
+            var city = _cities.FirstOrDefault(c => c.Id == id);
             if (city == null)
             {
                 return null;

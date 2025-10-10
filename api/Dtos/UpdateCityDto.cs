@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace api.Dtos
 {
-    public class WeatherResponseDto
+    public class UpdateCityDto
     {
         
     }

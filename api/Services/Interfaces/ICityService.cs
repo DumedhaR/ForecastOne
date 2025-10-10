@@ -8,10 +8,10 @@ namespace api.Services.Interfaces
 {
     public interface ICityService
     {
-        List<City> GetAllCities();
+        List<City> GetAll();
 
-        List<string> GetAllCityCodes();
+        List<int> GetAllCityCodes();
 
-        City? GetCityByCode(string code);
+        City? GetById(int id);
     }
 }

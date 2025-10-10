@@ -7,16 +7,10 @@ namespace api.Dtos
 {
     public class CityDto
     {
-        public int id { get; set; }
-        public string name { get; set; } = string.Empty;
-        public string state { get; set; } = string.Empty;
-        public string country { get; set; } = string.Empty;
-        public CoordDto coord { get; set; } = new();
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Country { get; set; } = string.Empty;
+
     }
 
-    public class CoordDto
-    {
-        public double lon { get; set; }
-        public double lat { get; set; }
-    }
 }

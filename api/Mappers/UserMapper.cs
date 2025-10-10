@@ -18,11 +18,10 @@ namespace api.Mappers
                 LastName = userModel.LastName,
                 Email = userModel.Email,
                 Picture = userModel.Picture,
-                FavoriteCityIds = userModel.FavoriteCityIds,
             };
         }
 
-        public static User ToUserModel(this CreateUserRequestDto userDto)
+        public static User ToUserModel(this CreateUserDto userDto)
         {
             return new User
             {
@@ -30,12 +29,11 @@ namespace api.Mappers
                 LastName = userDto.LastName,
                 Email = userDto.Email,
                 Picture = userDto.Picture,
-                FavoriteCityIds = userDto.FavoriteCityIds,
 
             };
         }
 
-        public static void UpdateUserModel(this User userModel, UpdateUserRequestDto userDto)
+        public static void UpdateUserModel(this User userModel, UpdateUserDto userDto)
         {
             if (userDto.FirstName != null)
                 userModel.FirstName = userDto.FirstName;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace api.Dtos
 {
-    public class UpdateUserRequestDto
+    public class UpdateUserDto
     {
         [StringLength(20, ErrorMessage = "First name cannot exceed 20 characters.")]
         public string? FirstName { get; set; }

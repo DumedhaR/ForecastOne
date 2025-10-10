@@ -59,7 +59,7 @@ namespace api.Services
         {
             var cities = _cityService.GetAllCityCodes();
 
-            var tasks = cities.Select(id => GetWeatherByCityId(int.Parse(id))).ToList();
+            var tasks = cities.Select(id => GetWeatherByCityId(id)).ToList();
 
             var results = await Task.WhenAll(tasks);
 
