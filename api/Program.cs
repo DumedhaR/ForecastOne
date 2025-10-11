@@ -1,3 +1,4 @@
+using System.Text;
 using api.Data;
 using api.Models;
 using api.Repositories;
@@ -7,29 +8,24 @@ using api.Services.Interfaces;
 using api.Settings;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add controllers
 builder.Services.AddControllers();
 
-// Add authentication (Cookie + Google)
+// Add authentication (Jwt + Google)
 builder.Services.AddAuthentication(options =>
 {
-    // Google as the default challenge scheme
-    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddCookie(
-//     options =>
-// {
-//     options.Cookie.SameSite = SameSiteMode.Lax;
-//     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-// }
-)
+.AddCookie()
 .AddGoogle(googleOptions =>
 {
     var clientId = builder.Configuration["Authentication:Google:ClientId"];
@@ -47,6 +43,31 @@ builder.Services.AddAuthentication(options =>
     googleOptions.Scope.Add("email");
     googleOptions.SaveTokens = false; // not require access & refresh token
     googleOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    var jwtKey = builder.Configuration["Jwt:Key"];
+    var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+    var jwtAudience = builder.Configuration["Jwt:Audience"];
+
+    if (string.IsNullOrEmpty(jwtKey))
+        throw new ArgumentNullException(nameof(jwtKey), "Jwt key not configured.");
+    if (string.IsNullOrEmpty(jwtIssuer))
+        throw new ArgumentNullException(nameof(jwtIssuer), "jwt issuer not configured.");
+    if (string.IsNullOrEmpty(jwtAudience))
+        throw new ArgumentNullException(nameof(jwtAudience), "jwt audience not configured.");
+
+    var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
+    };
 });
 
 // Configure EF Core

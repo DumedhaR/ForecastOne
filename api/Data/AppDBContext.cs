@@ -37,6 +37,11 @@ namespace api.Data
 
             // 1:M
 
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.UserRole)
+                .WithMany(ur => ur.Users)
+                .HasForeignKey(u => u.RoleId);
+
             modelBuilder.Entity<UserLogin>()
                 .HasOne(l => l.User)
                 .WithMany(p => p.UserLogins)
@@ -57,8 +62,13 @@ namespace api.Data
 
             // Seed providers
             modelBuilder.Entity<AuthProvider>().HasData(
-                new AuthProvider { Id = 1, Name = "google" },
-                new AuthProvider { Id = 2, Name = "facebook" }
+                new AuthProvider { Id = 1, Name = "Google" },
+                new AuthProvider { Id = 2, Name = "Facebook" }
+            );
+
+            modelBuilder.Entity<UserRole>().HasData(
+                new AuthProvider { Id = 1, Name = "User" },
+                new AuthProvider { Id = 2, Name = "Admin" }
             );
 
             modelBuilder.Entity<City>().HasData(

@@ -24,6 +24,21 @@ namespace api.Repositories
             throw new NotImplementedException();
         }
 
+        public Task<UserLogin> GetByEmailAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<UserLogin> GetByIdAsync(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<UserLogin> GetByProviderAsync(int providerId, string subId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<UserLogin> GetByUserIdAsync(int userId)
         {
             throw new NotImplementedException();
@@ -33,5 +48,16 @@ namespace api.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public Task<List<UserRole>> GetAllRolesAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<UserRole> GetRoleByNameAsync(string role)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

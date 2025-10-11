@@ -9,15 +9,18 @@ namespace api.Mappers
 {
     public static class UserMapper
     {
-        public static UserDto ToUserDto(this User userModel)
+        public static UserDto ToUserDto(this User userProfile)
         {
             return new UserDto
             {
-                Id = userModel.Id,
-                FirstName = userModel.FirstName,
-                LastName = userModel.LastName,
-                Email = userModel.Email,
-                Picture = userModel.Picture,
+                FirstName = userProfile.FirstName,
+                LastName = userProfile.LastName,
+                Email = userProfile.Email,
+                Picture = userProfile.Picture,
+                FavoriteCityIds = userProfile.FavoriteCities
+                                    .Select(ufc => ufc.CityId)
+                                    .ToList(),
+
             };
         }
 

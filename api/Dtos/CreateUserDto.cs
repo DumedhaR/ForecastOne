@@ -20,9 +20,12 @@ namespace api.Dtos
         [EmailAddress(ErrorMessage = "Email is not valid.")]
         public string Email { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Password is required.")]
+        [StringLength(50, MinimumLength = 8, ErrorMessage = "Password must be at least 8 characters.")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$",
+            ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, and one number.")]
+        public string Password { get; set; } = string.Empty;
+
         public string Picture { get; set; } = string.Empty;
-
-        public List<int> FavoriteCityIds { get; set; } = new();
-
     }
 }

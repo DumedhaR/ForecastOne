@@ -15,7 +15,6 @@ namespace api.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        // private readonly AppDBContext _context; // '_' used as naming convention (prefix) for private fields.
         private readonly IUserRepository _userRepo;
         public UserController(IUserRepository userRepo)
         {
