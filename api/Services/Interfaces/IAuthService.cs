@@ -10,7 +10,8 @@ namespace api.Services.Interfaces
     public interface IAuthService
     {
         public Task<AuthResult?> SignUpLocalUserAsync(CreateUserDto userDto);
-        public Task<AuthResult?> SignUpGoogleUserAsync(ClaimsPrincipal claims);
+        public Task<AuthResult?> SignInOrUpGoogleUserAsync(ClaimsPrincipal claims);
+        public Task<AuthResult?> SignInLocalUserAsync(AuthRequestDto credentials);
 
     }
 }

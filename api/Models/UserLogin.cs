@@ -12,7 +12,7 @@ namespace api.Models
         public int Id { get; set; }
         public int UserId { get; set; }
         public int? ProviderId { get; set; }  // Only for external 
-        public string LoginType { get; set; } = string.Empty;  // "local" or "external"
+        public bool IsExternal { get; set; }  // "local" or "external"
         public string? Email { get; set; }
         public string? Password { get; set; }  // Only for local
         public string? SubId { get; set; }  // Only for external (OpenID 'sub')

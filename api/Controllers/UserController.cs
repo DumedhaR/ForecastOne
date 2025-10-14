@@ -44,19 +44,19 @@ namespace api.Controllers
             return Ok(user.ToUserDto());
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateUserDto userDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);  // if model or dto validations failed
-            }
+        // [HttpPost]
+        // public async Task<IActionResult> Create([FromBody] CreateUserDto userDto)
+        // {
+        //     if (!ModelState.IsValid)
+        //     {
+        //         return BadRequest(ModelState);  // if model or dto validations failed
+        //     }
 
-            var userModel = userDto.ToUserModel();
-            await _userRepo.CreateAsync(userModel);
-            return CreatedAtAction(nameof(GetById), new { id = userModel.Id }, userModel.ToUserDto());
+        //     var userModel = userDto.ToUserModel();
+        //     await _userRepo.CreateAsync(userModel);
+        //     return CreatedAtAction(nameof(GetById), new { id = userModel.Id }, userModel.ToUserDto());
 
-        }
+        // }
 
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateUserDto userDto)

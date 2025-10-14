@@ -36,16 +36,6 @@ namespace api.Mappers
             };
         }
 
-        public static void UpdateUserModel(this User userModel, UpdateUserDto userDto)
-        {
-            if (userDto.FirstName != null)
-                userModel.FirstName = userDto.FirstName;
 
-            if (userDto.LastName != null)
-                userModel.LastName = userDto.LastName;
-
-            if (userDto.Picture != null)
-                userModel.Picture = userDto.Picture;
-        }
     }
 }

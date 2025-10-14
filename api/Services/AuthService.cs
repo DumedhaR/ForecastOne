@@ -70,14 +70,17 @@ namespace api.Services
                 return null;
             }
             var newUser = userDto.ToUserModel();
-            var defaultRole = await _authRepository.GetRoleByNameAsync("User");
-            if (defaultRole == null)
-            {
-                throw new Exception("Default role not found. Please seed roles first.");
-            }
+            var defaultRole = await _authRepository.GetRoleByNameAsync("user") ?? throw new Exception("Default role not found. Please seed roles first.");
             newUser.RoleId = defaultRole.Id;
             var userModel = await _userRepository.CreateAsync(newUser);
-            await _authRepository.CreateLocalUserAsync(userModel.Id, userDto.Password, userDto.Email);
+            UserLogin userLogin = new()
+            {
+                UserId = userModel.Id,
+                Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password),
+                Email = userDto.Email,
+                IsExternal = false
+            };
+            await _authRepository.CreateUserLoginAsync(userLogin);
             var token = GenerateJwtToken(userModel, defaultRole.Name);
             return new AuthResult
             {
@@ -85,10 +88,93 @@ namespace api.Services
                 Token = token
             };
         }
-        public Task<AuthResult?> SignUpGoogleUserAsync(ClaimsPrincipal claims)
+
+        public async Task<AuthResult?> SignInGoogleUserAsync(UserLogin userLogin)
         {
-            throw new NotImplementedException();
+            var existingUser = await _userRepository.GetByIdAsync(userLogin.UserId);
+
+            if (existingUser == null)
+            {
+                return null;
+            }
+            var userRole = await _authRepository.GetRoleByIdAsync(existingUser.RoleId) ?? throw new Exception("Role not found for given Id.");
+
+            var token = GenerateJwtToken(existingUser, userRole.Name);
+
+            return new AuthResult
+            {
+                User = existingUser.ToUserDto(),
+                Token = token
+            };
         }
 
+        public async Task<AuthResult?> SignInOrUpGoogleUserAsync(ClaimsPrincipal userClaims)
+        {
+            // Extract claims
+            var subId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (subId == null)
+            {
+                return null;
+            }
+            var defaultProvider = await _authRepository.GetProviderByNameAsync("google") ?? throw new Exception($"Default Provider not found. Please seed provider first.");
+            var defaultRole = await _authRepository.GetRoleByNameAsync("user") ?? throw new Exception("Default role not found. Please seed roles first.");
+            var existingUserLogin = await _authRepository.GetByProviderAsync(defaultProvider.Id, subId);
+            if (existingUserLogin != null)
+            {
+                return await SignInGoogleUserAsync(existingUserLogin);
+            }
+            var email = (userClaims.FindFirst(ClaimTypes.Email)?.Value) ?? throw new Exception("Email not found in claims.");
+            var firstName = userClaims.FindFirst(ClaimTypes.GivenName)?.Value;
+            var lastName = userClaims.FindFirst(ClaimTypes.Surname)?.Value;
+            User newUser = new()
+            {
+                FirstName = firstName ?? "Unknown",
+                LastName = lastName ?? "User",
+                Email = email,
+                RoleId = defaultRole.Id,
+            };
+            var userModel = await _userRepository.CreateAsync(newUser);
+            UserLogin userLogin = new()
+            {
+                UserId = userModel.Id,
+                ProviderId = defaultProvider.Id,
+                SubId = subId,
+                Email = email,
+                IsExternal = true
+            };
+            await _authRepository.CreateUserLoginAsync(userLogin);
+            var token = GenerateJwtToken(userModel, defaultRole.Name);
+            return new AuthResult
+            {
+                User = userModel.ToUserDto(),
+                Token = token
+            };
+        }
+
+        public async Task<AuthResult?> SignInLocalUserAsync(AuthRequestDto credentials)
+        {
+            var userLogin = await _authRepository.GetByEmailAsync(credentials.Email);
+
+            if (userLogin == null || !BCrypt.Net.BCrypt.Verify(credentials.Password, userLogin.Password))
+            {
+                return null;
+            }
+
+            var userModel = await _userRepository.GetByIdAsync(userLogin.UserId);
+
+            if (userModel == null)
+            {
+                return null;
+            }
+            var userRole = await _authRepository.GetRoleByIdAsync(userModel.RoleId) ?? throw new Exception("Role not found for given Id.");
+
+            var token = GenerateJwtToken(userModel, userRole.Name);
+
+            return new AuthResult
+            {
+                User = userModel.ToUserDto(),
+                Token = token
+            };
+        }
     }
 }

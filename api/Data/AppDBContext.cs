@@ -16,6 +16,7 @@ namespace api.Data
         public DbSet<AuthProvider> AuthProviders { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<UserFavoriteCity> UserFavoriteCities { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -62,13 +63,13 @@ namespace api.Data
 
             // Seed providers
             modelBuilder.Entity<AuthProvider>().HasData(
-                new AuthProvider { Id = 1, Name = "Google" },
-                new AuthProvider { Id = 2, Name = "Facebook" }
+                new AuthProvider { Id = 1, Name = "google" },
+                new AuthProvider { Id = 2, Name = "facebook" }
             );
 
             modelBuilder.Entity<UserRole>().HasData(
-                new AuthProvider { Id = 1, Name = "User" },
-                new AuthProvider { Id = 2, Name = "Admin" }
+                new AuthProvider { Id = 1, Name = "user" },
+                new AuthProvider { Id = 2, Name = "admin" }
             );
 
             modelBuilder.Entity<City>().HasData(

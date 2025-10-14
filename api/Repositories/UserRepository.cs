@@ -54,7 +54,15 @@ namespace api.Repositories
             {
                 return null;
             }
-            existingUser.UpdateUserModel(userDto);
+            if (userDto.FirstName != null)
+                existingUser.FirstName = userDto.FirstName;
+
+            if (userDto.LastName != null)
+                existingUser.LastName = userDto.LastName;
+
+            if (userDto.Picture != null)
+                existingUser.Picture = userDto.Picture;
+
             await _context.SaveChangesAsync();
             return existingUser;
         }

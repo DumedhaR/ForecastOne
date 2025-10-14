@@ -2,62 +2,101 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Data;
 using api.Models;
 using api.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Repositories
 {
     public class AuthRepository : IAuthRepository
     {
-        public Task<UserLogin> CreateExternalUserAsync(int userId, int providerId, string subId, string? email = null)
+        private readonly AppDBContext _context;
+
+        public AuthRepository(AppDBContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+        public async Task<UserLogin> CreateUserLoginAsync(UserLogin userLogin)
+        {
+            await _context.UserLogins.AddAsync(userLogin);
+            await _context.SaveChangesAsync();
+            return userLogin;
         }
 
-        public Task<UserLogin> CreateLocalUserAsync(int userId, string password, string Email)
+        public async Task<UserLogin?> DeleteAsync(int userId)
         {
-            throw new NotImplementedException();
+            var userLogin = await _context.UserLogins.FirstOrDefaultAsync(ul => ul.UserId == userId);
+            if (userLogin == null)
+            {
+                return null;
+            }
+            _context.UserLogins.Remove(userLogin);
+            await _context.SaveChangesAsync();
+            return userLogin;
         }
 
-        public Task<UserLogin> DeleteAsync(int userId)
+        public async Task<UserLogin?> GetByEmailAsync(string email)
         {
-            throw new NotImplementedException();
+            var userLogin = await _context.UserLogins.FirstOrDefaultAsync(ul => ul.Email == email);
+
+            return userLogin;
         }
 
-        public Task<UserLogin> GetByEmailAsync(string email)
+        public async Task<UserLogin?> GetByUserIdAsync(int userId)
         {
-            throw new NotImplementedException();
+            var userLogin = await _context.UserLogins.FirstOrDefaultAsync(ul => ul.UserId == userId);
+
+            return userLogin;
         }
 
-        public Task<UserLogin> GetByIdAsync(int userId)
+        public async Task<UserLogin?> GetByProviderAsync(int providerId, string subId)
         {
-            throw new NotImplementedException();
+            var userLogin = await _context.UserLogins.FirstOrDefaultAsync(ul =>
+                ul.ProviderId == providerId &&
+                ul.SubId == subId
+            );
+
+            return userLogin;
         }
 
-        public Task<UserLogin> GetByProviderAsync(int providerId, string subId)
+        public async Task<UserLogin?> UpdateUserPasswordAsync(int userId, string password)
         {
-            throw new NotImplementedException();
+            var existingUserLogin = await _context.UserLogins.FirstOrDefaultAsync(ul => ul.UserId == userId && !ul.IsExternal);
+            if (existingUserLogin == null)
+            {
+                return null;
+            }
+            if (!string.IsNullOrWhiteSpace(password))
+                existingUserLogin.Password = password;
+
+            await _context.SaveChangesAsync();
+            return existingUserLogin;
         }
 
-        public Task<UserLogin> GetByUserIdAsync(int userId)
+        public async Task<List<UserRole>> GetAllRolesAsync()
         {
-            throw new NotImplementedException();
+            return await _context.UserRoles.ToListAsync();
         }
 
-        public Task<UserLogin> UpdateLocalUserAsync(int userId, string password)
+        public async Task<UserRole?> GetRoleByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.UserRoles.FindAsync(id);
         }
 
-        public Task<List<UserRole>> GetAllRolesAsync()
+        public async Task<UserRole?> GetRoleByNameAsync(string name)
         {
-            throw new NotImplementedException();
+            return await _context.UserRoles.FirstOrDefaultAsync(ur => ur.Name == name);
         }
 
-        public Task<UserRole> GetRoleByNameAsync(string role)
+        public async Task<AuthProvider?> GetProviderByNameAsync(string name)
         {
-            throw new NotImplementedException();
+            return await _context.AuthProviders.FirstOrDefaultAsync(p => p.Name == name);
         }
 
+        public async Task<List<AuthProvider>?> GetAllProvidersAsync()
+        {
+            return await _context.AuthProviders.ToListAsync();
+        }
     }
 }
