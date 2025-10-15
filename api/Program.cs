@@ -41,7 +41,7 @@ builder.Services.AddAuthentication(options =>
     googleOptions.Scope.Add("openid");
     googleOptions.Scope.Add("profile");
     googleOptions.Scope.Add("email");
-    googleOptions.SaveTokens = false; // not require access & refresh token
+    googleOptions.SaveTokens = true; // not require access & refresh token
     googleOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
@@ -82,6 +82,8 @@ builder.Services.Configure<OpenWeatherMapSettings>(
 // Dependency injection
 builder.Services.AddSingleton<ICityService, CityService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Register WeatherService with HttpClient
 builder.Services.AddHttpClient<IWeatherService, WeatherService>((serviceProvider, client) =>

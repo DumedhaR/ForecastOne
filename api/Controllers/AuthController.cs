@@ -42,6 +42,8 @@ namespace api.Controllers
 
             var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
 
+            Console.WriteLine("hello");
+
             if (!result.Succeeded)
                 return Unauthorized("Google authentication failed");
 
