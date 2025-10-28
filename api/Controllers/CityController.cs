@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Models;
 using api.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
 {
 
+    [Authorize(Policy = "AdminOrUser")]
     [Route("api/city")]
     [ApiController]
     public class CityController : ControllerBase

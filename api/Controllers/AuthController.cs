@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Dtos;
 using api.Repositories.Interfaces;
 using api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
@@ -58,6 +59,22 @@ namespace api.Controllers
 
             // Redirect frontend with JWT
             return Redirect("http://localhost:5173/weather");
+        }
+
+        [HttpPost("signup")]
+        public async Task<IActionResult> SignUp([FromBody] CreateUserDto userDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);  // if model or dto validations failed
+            }
+            var authResult = await _authService.SignUpLocalUserAsync(userDto);
+
+            if (authResult == null)
+            {
+                return BadRequest("Authentication failed.");
+            }
+            return Ok(authResult);
         }
     }
 }

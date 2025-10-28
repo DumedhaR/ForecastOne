@@ -24,6 +24,7 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
 })
 .AddCookie()
 .AddGoogle(googleOptions =>
@@ -69,6 +70,12 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
     };
 });
+
+// Add authorization policies & roles
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy => policy.RequireRole("admin"))
+    .AddPolicy("UserOnly", policy => policy.RequireRole("user"))
+    .AddPolicy("AdminOrUser", policy => policy.RequireRole("admin", "user"));
 
 // Configure EF Core
 builder.Services.AddDbContext<AppDBContext>(options =>

@@ -6,6 +6,7 @@ using api.Data;
 using api.Dtos;
 using api.Mappers;
 using api.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,7 @@ namespace api.Controllers
 
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -31,6 +33,7 @@ namespace api.Controllers
             return Ok(userDtos);
         }
 
+        [Authorize(Policy = "AdminOrUser")]
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
@@ -58,6 +61,7 @@ namespace api.Controllers
 
         // }
 
+        [Authorize(Policy = "AdminOrUser")]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateUserDto userDto)
         {
@@ -76,6 +80,7 @@ namespace api.Controllers
             return Ok(userModel.ToUserDto());
         }
 
+        [Authorize(Policy = "AdminOrUser")]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
@@ -88,6 +93,7 @@ namespace api.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = "AdminOrUser")]
         [HttpPost("fav/cities")]
         public async Task<IActionResult> AddFavoriteCity([FromBody] int cityId)
         {
@@ -102,6 +108,7 @@ namespace api.Controllers
 
         }
 
+        [Authorize(Policy = "AdminOrUser")]
         [HttpDelete("fav/cities")]
         public async Task<IActionResult> DeleteFavoriteCity([FromBody] int cityId)
         {
