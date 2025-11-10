@@ -25,6 +25,11 @@ namespace api.Repositories
             throw new NotImplementedException();
         }
 
+        public Task<List<int>> GetAllIdsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<City?> GetByIdAsync(int id)
         {
             throw new NotImplementedException();

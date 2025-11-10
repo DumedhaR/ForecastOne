@@ -10,6 +10,7 @@ namespace api.Repositories.Interfaces
     public interface ICityRepository
     {
         Task<List<City>> GetAllAsync();
+        Task<List<int>> GetAllIdsAsync();
         Task<City?> GetByIdAsync(int id);
         Task<City> CreateAsync(City cityModel);
         Task<City?> UpdateAsync(int id, UpdateCityDto cityDto);

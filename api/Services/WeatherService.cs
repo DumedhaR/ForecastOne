@@ -57,7 +57,7 @@ namespace api.Services
 
         public async Task<List<WeatherResult>?> GetAllWeather()
         {
-            var cities = _cityService.GetAllCityCodes();
+            var cities = await _cityService.GetAllCityCodes();
 
             var tasks = cities.Select(id => GetWeatherByCityId(id)).ToList();
 

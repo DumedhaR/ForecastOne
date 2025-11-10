@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using api.Dtos;
+using api.Mappers;
 using api.Models;
+using api.Repositories;
+using api.Repositories.Interfaces;
 using api.Services.Interfaces;
 
 namespace api.Services
@@ -11,41 +15,55 @@ namespace api.Services
     public class CityService : ICityService
 
     {
-        private readonly List<City> _cities;
-        public CityService()
+        private readonly ICityRepository _cityRepository;
+        public CityService(ICityRepository cityRepository)
         {
-            string dataPath = Path.Combine(AppContext.BaseDirectory, "Data", "cities.json");
-            try
-            {
-                string json = File.ReadAllText(dataPath);
-                var dict = JsonSerializer.Deserialize<Dictionary<string, List<City>>>(json);
-                _cities = dict?["List"] ?? new List<City>();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error reading city data: " + e.Message);
-                Environment.Exit(1); // fail fast as it critical req
-            }
-        }
-        public List<City> GetAll()
-        {
-            return _cities;
+            _cityRepository = cityRepository;
         }
 
-        public List<int> GetAllCityCodes()
+        public async Task<List<City>> GetAll()
         {
-            var cityCodes = _cities.Select(c => c.Id).ToList();
+            var cityModels = await _cityRepository.GetAllAsync();
+            return cityModels;
+        }
+
+        public async Task<List<int>> GetAllCityCodes()
+        {
+            var cityCodes = await _cityRepository.GetAllIdsAsync();
             return cityCodes;
         }
 
-        public City? GetById(int id)
+        public async Task<City?> GetById(int id)
         {
-            var city = _cities.FirstOrDefault(c => c.Id == id);
-            if (city == null)
+            var cityModel = await _cityRepository.GetByIdAsync(id);
+
+            if (cityModel == null)
             {
                 return null;
             }
-            return city;
+
+            return cityModel;
         }
+
+        public async Task<City?> UpdateById(int id, UpdateCityDto cityDto)
+        {
+            var UpdatedCityModel = await _cityRepository.UpdateAsync(id, cityDto);
+            if (UpdatedCityModel == null)
+            {
+                return null;
+            }
+            return UpdatedCityModel;
+        }
+
+        public async Task<City?> DeleteById(int id)
+        {
+            var DeletedCityModel = await _cityRepository.DeleteAsync(id);
+            if (DeletedCityModel == null)
+            {
+                return null;
+            }
+            return DeletedCityModel;
+        }
+
     }
 }

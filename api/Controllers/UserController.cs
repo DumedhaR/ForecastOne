@@ -29,7 +29,7 @@ namespace api.Controllers
         public async Task<IActionResult> GetAll()
         {
             var users = await _userRepo.GetAllAsync();
-            var userDtos = users.Select(s => s.ToUserDto());
+            var userDtos = users.Select(u => u.ToUserDto());
             return Ok(userDtos);
         }
 

@@ -1,15 +1,12 @@
 using System.Text;
 using api.Data;
-using api.Models;
 using api.Repositories;
 using api.Repositories.Interfaces;
 using api.Services;
 using api.Services.Interfaces;
 using api.Settings;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -42,7 +39,7 @@ builder.Services.AddAuthentication(options =>
     googleOptions.Scope.Add("openid");
     googleOptions.Scope.Add("profile");
     googleOptions.Scope.Add("email");
-    googleOptions.SaveTokens = true; // not require access & refresh token
+    googleOptions.SaveTokens = true;
     googleOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
@@ -87,10 +84,11 @@ builder.Services.Configure<OpenWeatherMapSettings>(
     builder.Configuration.GetSection("OpenWeatherMap"));
 
 // Dependency injection
-builder.Services.AddSingleton<ICityService, CityService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICityRepository, CityRepository>();
+builder.Services.AddScoped<ICityService, CityService>();
 
 // Register WeatherService with HttpClient
 builder.Services.AddHttpClient<IWeatherService, WeatherService>((serviceProvider, client) =>
@@ -103,7 +101,16 @@ builder.Services.AddHttpClient<IWeatherService, WeatherService>((serviceProvider
 // Enable in-memory caching
 builder.Services.AddMemoryCache();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 // // Middleware pipeline
 // app.UseCookiePolicy(new CookiePolicyOptions

@@ -61,17 +61,19 @@ namespace api.Data
                 .IsUnique()
                 .HasFilter("[SubId] IS NOT NULL");
 
-            // Seed providers
+            // Seed sample providers
             modelBuilder.Entity<AuthProvider>().HasData(
                 new AuthProvider { Id = 1, Name = "google" },
                 new AuthProvider { Id = 2, Name = "facebook" }
             );
 
+            // Seed user account roles
             modelBuilder.Entity<UserRole>().HasData(
                 new AuthProvider { Id = 1, Name = "user" },
                 new AuthProvider { Id = 2, Name = "admin" }
             );
 
+            // Seed sample city data
             modelBuilder.Entity<City>().HasData(
                 new City { Id = 1248991, Name = "Colombo", Country = "LK" },
                 new City { Id = 1850147, Name = "Tokyo", Country = "JP" },
@@ -92,8 +94,6 @@ namespace api.Data
                 new City { Id = 1880252, Name = "Singapore", Country = "SG" },
                 new City { Id = 1835848, Name = "Seoul", Country = "KR" }
             );
-
-
 
         }
 
