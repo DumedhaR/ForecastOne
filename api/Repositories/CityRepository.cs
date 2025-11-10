@@ -2,42 +2,75 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Data;
 using api.Dtos;
 using api.Models;
 using api.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Repositories
 {
     public class CityRepository : ICityRepository
     {
-        public Task<City> CreateAsync(City cityModel)
+        private readonly AppDBContext _context;
+        public CityRepository(AppDBContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+        public async Task<City> CreateAsync(City cityModel)
+        {
+            await _context.Cities.AddAsync(cityModel);
+            await _context.SaveChangesAsync();
+            return cityModel;
         }
 
-        public Task<City?> DeleteAsync(int id)
+        public async Task<List<City>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Cities.ToListAsync();
         }
 
-        public Task<List<City>> GetAllAsync()
+        public async Task<List<int>> GetAllIdsAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Cities.Select(c => c.Id).ToListAsync();
         }
 
-        public Task<List<int>> GetAllIdsAsync()
+        public async Task<City?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Cities.FindAsync(id);
         }
 
-        public Task<City?> GetByIdAsync(int id)
+        public async Task<City?> UpdateAsync(int id, UpdateCityDto cityDto)
         {
-            throw new NotImplementedException();
+            var cityModel = await _context.Cities.FindAsync(id);
+
+            if (cityModel == null)
+            {
+                return null;
+            }
+            if (cityDto.Name != null)
+                cityModel.Name = cityDto.Name;
+            if (cityDto.Country != null)
+                cityModel.Country = cityDto.Country;
+
+            await _context.SaveChangesAsync();
+
+            return cityModel;
         }
 
-        public Task<City?> UpdateAsync(int id, UpdateCityDto cityDto)
+        public async Task<City?> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var cityModel = await _context.Cities.FindAsync(id);
+
+            if (cityModel == null)
+            {
+                return null;
+            }
+
+            _context.Cities.Remove(cityModel);
+            await _context.SaveChangesAsync();
+
+            return cityModel;
         }
+
     }
 }

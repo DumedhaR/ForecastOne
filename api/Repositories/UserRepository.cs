@@ -49,22 +49,22 @@ namespace api.Repositories
 
         public async Task<User?> UpdateAsync(int id, UpdateUserDto userDto)
         {
-            var existingUser = await _context.Users.FirstOrDefaultAsync(s => s.Id == id);
-            if (existingUser == null)
+            var userModel = await _context.Users.FirstOrDefaultAsync(s => s.Id == id);
+            if (userModel == null)
             {
                 return null;
             }
             if (userDto.FirstName != null)
-                existingUser.FirstName = userDto.FirstName;
+                userModel.FirstName = userDto.FirstName;
 
             if (userDto.LastName != null)
-                existingUser.LastName = userDto.LastName;
+                userModel.LastName = userDto.LastName;
 
             if (userDto.Picture != null)
-                existingUser.Picture = userDto.Picture;
+                userModel.Picture = userDto.Picture;
 
             await _context.SaveChangesAsync();
-            return existingUser;
+            return userModel;
         }
 
         public async Task<User?> GetUserProfile(int id)
