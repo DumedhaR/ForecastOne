@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Mappers;
 using api.Models;
 using api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.Controllers
 {
 
-    [Authorize(Policy = "AdminOrUser")]
+    // [Authorize(Policy = "AdminOrUser")]
     [Route("api/city")]
     [ApiController]
     public class CityController : ControllerBase
@@ -23,29 +24,32 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<City>> GetAllCities()
+        public async Task<ActionResult> GetAllCities()
         {
-            var cities = _cityService.GetAll();
-            return Ok(cities);
+            var cities = await _cityService.GetAll();
+            var cityDtos = cities.Select(c => c.ToCityDto());
+            return Ok(cityDtos);
         }
 
         // GET: api/city/codes
         [HttpGet("codes")]
-        public ActionResult<List<string>> GetAllCityCodes()
+        public async Task<ActionResult> GetAllCityCodes()
         {
-            var codes = _cityService.GetAllCityCodes();
+            var codes = await _cityService.GetAllCityCodes();
             return Ok(codes);
         }
 
         // GET: api/city/{code}
-        [HttpGet("{id}")]
-        public ActionResult<City> GetCityByCode(int id)
+        [HttpGet("{code:int}")]
+        public async Task<ActionResult> GetCityByCode([FromRoute] int code)
         {
-            var city = _cityService.GetById(id);
+            var city = await _cityService.GetById(code);
             if (city == null)
-                return NotFound($"City with code {id} not found.");
+            {
+                return NotFound($"City with code {code} not found.");
+            }
 
-            return Ok(city);
+            return Ok(city.ToCityDto());
         }
 
     }

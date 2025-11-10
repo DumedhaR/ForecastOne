@@ -14,7 +14,7 @@ namespace api.Mappers
         {
             return new CityDto
             {
-                Id = cityModel.Id,
+                Code = cityModel.Id,
                 Country = cityModel.Country,
                 Name = cityModel.Name,
             };
@@ -24,7 +24,7 @@ namespace api.Mappers
         {
             return new City
             {
-                Id = cityDto.Id,
+                Id = cityDto.Code,
                 Name = cityDto.Name,
                 Country = cityDto.Country,
             };
