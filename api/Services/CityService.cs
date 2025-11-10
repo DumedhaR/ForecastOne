@@ -21,19 +21,19 @@ namespace api.Services
             _cityRepository = cityRepository;
         }
 
-        public async Task<List<City>> GetAll()
+        public async Task<List<City>> GetAllAsync()
         {
             var cityModels = await _cityRepository.GetAllAsync();
             return cityModels;
         }
 
-        public async Task<List<int>> GetAllCityCodes()
+        public async Task<List<int>> GetAllCityCodesAsync()
         {
             var cityCodes = await _cityRepository.GetAllIdsAsync();
             return cityCodes;
         }
 
-        public async Task<City?> GetById(int id)
+        public async Task<City?> GetByIdAsync(int id)
         {
             var cityModel = await _cityRepository.GetByIdAsync(id);
 
@@ -45,25 +45,38 @@ namespace api.Services
             return cityModel;
         }
 
-        public async Task<City?> UpdateById(int id, UpdateCityDto cityDto)
+        public async Task<City?> UpdateByIdAsync(int id, UpdateCityDto cityDto)
         {
-            var UpdatedCityModel = await _cityRepository.UpdateAsync(id, cityDto);
-            if (UpdatedCityModel == null)
+            var updatedCityModel = await _cityRepository.UpdateAsync(id, cityDto);
+            if (updatedCityModel == null)
             {
                 return null;
             }
-            return UpdatedCityModel;
+            return updatedCityModel;
         }
 
-        public async Task<City?> DeleteById(int id)
+        public async Task<City?> DeleteByIdAsync(int id)
         {
-            var DeletedCityModel = await _cityRepository.DeleteAsync(id);
-            if (DeletedCityModel == null)
+            var deletedCityModel = await _cityRepository.DeleteAsync(id);
+            if (deletedCityModel == null)
             {
                 return null;
             }
-            return DeletedCityModel;
+            return deletedCityModel;
         }
 
+        public async Task<City?> CreateCityAsync(City city)
+        {
+            var existingCityModel = await _cityRepository.GetByIdAsync(city.Id);
+
+            if (existingCityModel != null)
+            {
+                return null;
+            }
+
+            var cityModel = await _cityRepository.CreateAsync(city);
+
+            return cityModel;
+        }
     }
 }

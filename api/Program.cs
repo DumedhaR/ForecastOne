@@ -84,7 +84,7 @@ builder.Services.Configure<OpenWeatherMapSettings>(
     builder.Configuration.GetSection("OpenWeatherMap"));
 
 // Dependency injection
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<api.Repositories.Interfaces.IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICityRepository, CityRepository>();

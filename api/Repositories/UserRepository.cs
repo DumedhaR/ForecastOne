@@ -20,7 +20,9 @@ namespace api.Repositories
         }
         public async Task<List<User>> GetAllAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users
+                    .Include(u => u.FavoriteCities)
+                        .ThenInclude(ufc => ufc.City).ToListAsync();
         }
 
         public async Task<User> CreateAsync(User userModel)
@@ -44,7 +46,10 @@ namespace api.Repositories
 
         public async Task<User?> GetByIdAsync(int id)
         {
-            return await _context.Users.FindAsync(id);
+            return await _context.Users
+                .Include(u => u.FavoriteCities)
+                    .ThenInclude(ufc => ufc.City)
+                .FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<User?> UpdateAsync(int id, UpdateUserDto userDto)
@@ -67,20 +72,6 @@ namespace api.Repositories
             return userModel;
         }
 
-        public async Task<User?> GetUserProfile(int id)
-        {
-            var userProfile = await _context.Users
-                .Include(u => u.FavoriteCities)
-                .ThenInclude(ufc => ufc.City)
-                .FirstOrDefaultAsync(u => u.Id == id);
-            if (userProfile == null)
-            {
-                return null;
-            }
-
-            return userProfile;
-        }
-
         public async Task<User?> AddFavoriteCityAsync(int userId, int cityId)
         {
             var isUserExist = await _context.Users.AnyAsync(u => u.Id == userId);
@@ -98,7 +89,7 @@ namespace api.Repositories
 
             if (isFavExist)
             {
-                return await GetUserProfile(userId);
+                return null;
             }
 
             await _context.UserFavoriteCities.AddAsync(new UserFavoriteCity
@@ -108,7 +99,7 @@ namespace api.Repositories
             });
             await _context.SaveChangesAsync();
 
-            return await GetUserProfile(userId);
+            return await GetByIdAsync(userId);
         }
 
         public async Task<User?> DeleteFavoriteCityAsync(int userId, int cityId)
@@ -122,7 +113,7 @@ namespace api.Repositories
             _context.UserFavoriteCities.Remove(existingfavCity);
             await _context.SaveChangesAsync();
 
-            return await GetUserProfile(userId);
+            return await GetByIdAsync(userId);
         }
 
     }

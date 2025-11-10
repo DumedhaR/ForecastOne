@@ -33,10 +33,10 @@ namespace api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{cityId:int}")]
-        public async Task<IActionResult> GetByCityId([FromRoute] int cityId)
+        [HttpGet("{code:int}")]
+        public async Task<IActionResult> GetByCityId([FromRoute] int code)
         {
-            var result = await _weatherService.GetWeatherByCityId(cityId);
+            var result = await _weatherService.GetWeatherByCityId(code);
 
             if (result == null)
             {

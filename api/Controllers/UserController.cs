@@ -16,11 +16,10 @@ namespace api.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserRepository _userRepo;
-        public UserController(IUserRepository userRepo)
+        private readonly IUserRepository _userService;
+        public UserController(IUserRepository userService)
         {
-            // _context = context; // no need use 'this' as we use '_' for private fields.
-            _userRepo = userRepo;
+            _userService = userService; // no need use 'this' as we use '_' for private fields.
 
         }
 
@@ -28,7 +27,7 @@ namespace api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var users = await _userRepo.GetAllAsync();
+            var users = await _userService.GetAllAsync();
             var userDtos = users.Select(u => u.ToUserDto());
             return Ok(userDtos);
         }
@@ -37,7 +36,7 @@ namespace api.Controllers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
-            var user = await _userRepo.GetByIdAsync(id);
+            var user = await _userService.GetByIdAsync(id);
 
             if (user == null)
             {
@@ -46,20 +45,6 @@ namespace api.Controllers
 
             return Ok(user.ToUserDto());
         }
-
-        // [HttpPost]
-        // public async Task<IActionResult> Create([FromBody] CreateUserDto userDto)
-        // {
-        //     if (!ModelState.IsValid)
-        //     {
-        //         return BadRequest(ModelState);  // if model or dto validations failed
-        //     }
-
-        //     var userModel = userDto.ToUserModel();
-        //     await _userRepo.CreateAsync(userModel);
-        //     return CreatedAtAction(nameof(GetById), new { id = userModel.Id }, userModel.ToUserDto());
-
-        // }
 
         [Authorize(Policy = "AdminOrUser")]
         [HttpPut("{id:int}")]
@@ -70,7 +55,7 @@ namespace api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var userModel = await _userRepo.UpdateAsync(id, userDto);
+            var userModel = await _userService.UpdateAsync(id, userDto);
 
             if (userModel == null)
             {
@@ -84,7 +69,7 @@ namespace api.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var userModel = await _userRepo.DeleteAsync(id);
+            var userModel = await _userService.DeleteAsync(id);
 
             if (userModel == null)
             {
@@ -97,14 +82,14 @@ namespace api.Controllers
         [HttpPost("fav/cities")]
         public async Task<IActionResult> AddFavoriteCity([FromBody] int cityId)
         {
-            var userId = 1;
-            var userModel = await _userRepo.AddFavoriteCityAsync(userId, cityId);
+            var userId = 1; //temp
+            var userModel = await _userService.AddFavoriteCityAsync(userId, cityId);
 
             if (userModel == null)
             {
                 return NotFound();
             }
-            return Ok(userModel);
+            return Ok(userModel.ToUserDto());
 
         }
 
@@ -112,14 +97,14 @@ namespace api.Controllers
         [HttpDelete("fav/cities")]
         public async Task<IActionResult> DeleteFavoriteCity([FromBody] int cityId)
         {
-            var userId = 1;
-            var userModel = await _userRepo.DeleteFavoriteCityAsync(userId, cityId);
+            var userId = 1; //temp
+            var userModel = await _userService.DeleteFavoriteCityAsync(userId, cityId);
 
             if (userModel == null)
             {
                 return NotFound();
             }
-            return Ok(userModel);
+            return Ok(userModel.ToUserDto());
 
         }
     }

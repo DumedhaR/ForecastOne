@@ -17,10 +17,10 @@ namespace api.Services
     public class AuthService : IAuthService
     {
         private readonly IAuthRepository _authRepository;
-        private readonly IUserRepository _userRepository;
+        private readonly Repositories.Interfaces.IUserRepository _userRepository;
 
         private readonly IConfiguration _config;
-        public AuthService(IAuthRepository authRepository, IUserRepository userRepository, IConfiguration config)
+        public AuthService(IAuthRepository authRepository, Repositories.Interfaces.IUserRepository userRepository, IConfiguration config)
         {
             _authRepository = authRepository;
             _userRepository = userRepository;

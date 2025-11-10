@@ -9,10 +9,11 @@ namespace api.Services.Interfaces
 {
     public interface ICityService
     {
-        Task<List<City>> GetAll();
-        Task<List<int>> GetAllCityCodes();
-        Task<City?> GetById(int id);
-        Task<City?> UpdateById(int id, UpdateCityDto cityDto);
-        Task<City?> DeleteById(int id);
+        public Task<City?> CreateCityAsync(City city);
+        public Task<List<City>> GetAllAsync();
+        public Task<List<int>> GetAllCityCodesAsync();
+        public Task<City?> GetByIdAsync(int id);
+        public Task<City?> UpdateByIdAsync(int id, UpdateCityDto cityDto);
+        public Task<City?> DeleteByIdAsync(int id);
     }
 }

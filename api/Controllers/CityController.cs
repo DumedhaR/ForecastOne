@@ -26,7 +26,7 @@ namespace api.Controllers
         [HttpGet]
         public async Task<ActionResult> GetAllCities()
         {
-            var cities = await _cityService.GetAll();
+            var cities = await _cityService.GetAllAsync();
             var cityDtos = cities.Select(c => c.ToCityDto());
             return Ok(cityDtos);
         }
@@ -35,7 +35,7 @@ namespace api.Controllers
         [HttpGet("codes")]
         public async Task<ActionResult> GetAllCityCodes()
         {
-            var codes = await _cityService.GetAllCityCodes();
+            var codes = await _cityService.GetAllCityCodesAsync();
             return Ok(codes);
         }
 
@@ -43,7 +43,7 @@ namespace api.Controllers
         [HttpGet("{code:int}")]
         public async Task<ActionResult> GetCityByCode([FromRoute] int code)
         {
-            var city = await _cityService.GetById(code);
+            var city = await _cityService.GetByIdAsync(code);
             if (city == null)
             {
                 return NotFound($"City with code {code} not found.");
