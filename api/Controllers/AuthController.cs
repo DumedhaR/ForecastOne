@@ -43,8 +43,6 @@ namespace api.Controllers
 
             var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
 
-            Console.WriteLine("hello");
-
             if (!result.Succeeded)
                 return Unauthorized("Google authentication failed");
 
@@ -76,5 +74,13 @@ namespace api.Controllers
             }
             return Ok(authResult);
         }
+
+        [HttpPost("signout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _authService.SignOutAsync();
+            return NoContent();
+        }
+
     }
 }

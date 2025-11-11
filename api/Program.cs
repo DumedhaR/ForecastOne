@@ -15,15 +15,24 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add controllers
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor(); // allow outside controllers/middleware to access HttpContext
+
 
 // Add authentication (Jwt + Google)
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 
 })
-.AddCookie()
+.AddCookie(options =>
+{
+    options.Cookie.Name = "AuthToken";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+})
 .AddGoogle(googleOptions =>
 {
     var clientId = builder.Configuration["Authentication:Google:ClientId"];

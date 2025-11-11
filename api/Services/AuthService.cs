@@ -10,6 +10,8 @@ using api.Mappers;
 using api.Models;
 using api.Repositories.Interfaces;
 using api.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.Tokens;
 
 namespace api.Services
@@ -17,13 +19,18 @@ namespace api.Services
     public class AuthService : IAuthService
     {
         private readonly IAuthRepository _authRepository;
-        private readonly Repositories.Interfaces.IUserRepository _userRepository;
-
+        private readonly IUserRepository _userRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _config;
-        public AuthService(IAuthRepository authRepository, Repositories.Interfaces.IUserRepository userRepository, IConfiguration config)
+        public AuthService(
+            IAuthRepository authRepository,
+            IUserRepository userRepository,
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration config)
         {
             _authRepository = authRepository;
             _userRepository = userRepository;
+            _httpContextAccessor = httpContextAccessor;
             _config = config;
         }
 
@@ -62,7 +69,61 @@ namespace api.Services
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-        public async Task<AuthResult?> SignUpLocalUserAsync(CreateUserDto userDto)
+
+        private async Task SetAuthCookieAsync(UserLogin userLogin, string role)
+        {
+            var httpContext = _httpContextAccessor.HttpContext
+                              ?? throw new InvalidOperationException("No active HTTP context");
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, userLogin.UserId.ToString()),
+                new Claim(ClaimTypes.Role, role.ToLowerInvariant())
+            };
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            await httpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal,
+                new AuthenticationProperties
+                {
+                    IsPersistent = true,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
+                });
+        }
+
+        public async Task<User?> SignInUserAsync(UserLogin userLogin)
+        {
+            var existingUser = await _userRepository.GetByIdAsync(userLogin.UserId);
+
+            if (existingUser == null)
+            {
+                return null;
+            }
+            var userRole = await _authRepository.GetRoleByIdAsync(existingUser.RoleId)
+                            ?? throw new Exception("Role not found for given Id.");
+
+            // var token = GenerateJwtToken(existingUser, userRole.Name);
+            await SetAuthCookieAsync(userLogin, userRole.Name);
+
+            return existingUser;
+        }
+
+        public async Task<User?> SignInLocalUserAsync(AuthRequestDto credentials)
+        {
+            var userLogin = await _authRepository.GetByEmailAsync(credentials.Email);
+
+            if (userLogin == null || !BCrypt.Net.BCrypt.Verify(credentials.Password, userLogin.Password))
+            {
+                return null;
+            }
+
+            return await SignInUserAsync(userLogin);
+        }
+
+        public async Task<User?> SignUpLocalUserAsync(CreateUserDto userDto)
         {
             var isUserExist = await _authRepository.GetByEmailAsync(userDto.Email);
             if (isUserExist != null)
@@ -70,7 +131,8 @@ namespace api.Services
                 return null;
             }
             var newUser = userDto.ToUserModel();
-            var defaultRole = await _authRepository.GetRoleByNameAsync("user") ?? throw new Exception("Default role not found. Please seed roles first.");
+            var defaultRole = await _authRepository.GetRoleByNameAsync("user")
+                                ?? throw new Exception("Default role not found. Please seed roles first.");
             newUser.RoleId = defaultRole.Id;
             var userModel = await _userRepository.CreateAsync(newUser);
             UserLogin userLogin = new()
@@ -81,34 +143,13 @@ namespace api.Services
                 IsExternal = false
             };
             await _authRepository.CreateUserLoginAsync(userLogin);
-            var token = GenerateJwtToken(userModel, defaultRole.Name);
-            return new AuthResult
-            {
-                User = userModel.ToUserDto(),
-                Token = token
-            };
+            // var token = GenerateJwtToken(userModel, defaultRole.Name);
+            await SetAuthCookieAsync(userLogin, defaultRole.Name);
+
+            return userModel;
         }
 
-        public async Task<AuthResult?> SignInGoogleUserAsync(UserLogin userLogin)
-        {
-            var existingUser = await _userRepository.GetByIdAsync(userLogin.UserId);
-
-            if (existingUser == null)
-            {
-                return null;
-            }
-            var userRole = await _authRepository.GetRoleByIdAsync(existingUser.RoleId) ?? throw new Exception("Role not found for given Id.");
-
-            var token = GenerateJwtToken(existingUser, userRole.Name);
-
-            return new AuthResult
-            {
-                User = existingUser.ToUserDto(),
-                Token = token
-            };
-        }
-
-        public async Task<AuthResult?> SignInOrUpGoogleUserAsync(ClaimsPrincipal userClaims)
+        public async Task<User?> SignInOrUpGoogleUserAsync(ClaimsPrincipal userClaims)
         {
             // Extract claims
             var subId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -121,7 +162,7 @@ namespace api.Services
             var existingUserLogin = await _authRepository.GetByProviderAsync(defaultProvider.Id, subId);
             if (existingUserLogin != null)
             {
-                return await SignInGoogleUserAsync(existingUserLogin);
+                return await SignInUserAsync(existingUserLogin);
             }
             var email = (userClaims.FindFirst(ClaimTypes.Email)?.Value) ?? throw new Exception("Email not found in claims.");
             var firstName = userClaims.FindFirst(ClaimTypes.GivenName)?.Value;
@@ -143,38 +184,19 @@ namespace api.Services
                 IsExternal = true
             };
             await _authRepository.CreateUserLoginAsync(userLogin);
-            var token = GenerateJwtToken(userModel, defaultRole.Name);
-            return new AuthResult
-            {
-                User = userModel.ToUserDto(),
-                Token = token
-            };
+            // var token = GenerateJwtToken(userModel, defaultRole.Name);
+            await SetAuthCookieAsync(userLogin, defaultRole.Name);
+
+            return userModel;
         }
 
-        public async Task<AuthResult?> SignInLocalUserAsync(AuthRequestDto credentials)
+        public async Task SignOutAsync()
         {
-            var userLogin = await _authRepository.GetByEmailAsync(credentials.Email);
-
-            if (userLogin == null || !BCrypt.Net.BCrypt.Verify(credentials.Password, userLogin.Password))
-            {
-                return null;
-            }
-
-            var userModel = await _userRepository.GetByIdAsync(userLogin.UserId);
-
-            if (userModel == null)
-            {
-                return null;
-            }
-            var userRole = await _authRepository.GetRoleByIdAsync(userModel.RoleId) ?? throw new Exception("Role not found for given Id.");
-
-            var token = GenerateJwtToken(userModel, userRole.Name);
-
-            return new AuthResult
-            {
-                User = userModel.ToUserDto(),
-                Token = token
-            };
+            var httpContext = _httpContextAccessor.HttpContext
+                              ?? throw new InvalidOperationException("No active HTTP context");
+            await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
+
+
     }
 }
