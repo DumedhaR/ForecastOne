@@ -6,7 +6,7 @@ const Footer = () => {
     >
       <div className="px-6 sm:px-12 lg:px-18 mx-auto capitalize">
         <div className="text-center text-sm opacity-60">
-          &copy; {new Date().getFullYear()} Fidenz Technologies
+          &copy; {new Date().getFullYear()} ForcastOne
         </div>
       </div>
     </footer>

@@ -1,5 +1,5 @@
 import { WiDayCloudy } from "react-icons/wi";
-import GetStartButton from "../components/GetStartButton";
+import Button from "../components/Button";
 // import { useEffect } from "react";
 // import { useNavigate } from "react-router-dom";
 // import LoadingSping from "../components/LoadingSpin";
@@ -38,7 +38,12 @@ const LandingPage = () => {
       <p className="text-md md:text-lg mb-12">
         Check the Latest Weather Updates <br /> Anytime, Anywhere
       </p>
-      <GetStartButton />
+      <Button
+        label="Get Started"
+        className="bg-white text-indigo-800 font-semibold hover:bg-gray-200"
+        to="/signIn"
+        buttonType="button"
+      />
     </div>
   );
 };

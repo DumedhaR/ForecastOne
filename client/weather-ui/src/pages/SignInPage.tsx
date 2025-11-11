@@ -1,5 +1,6 @@
 import GoogleLoginButton from "../components/GoogleSignIn";
 import FadeSlider from "../components/FadeSlider";
+import SignIn from "../components/LocalSignIn";
 
 const images = [
   "/images/cover1.jpg",
@@ -26,7 +27,9 @@ export default function SignInPage() {
             Welcome to <br />
             ForecastOne
           </h1>
-          <p className="text-gray-400 mb-4">Login or Signup to continue</p>
+          <p className="text-gray-400 mb-4">Signup to continue</p>
+          <SignIn />
+          <p className="text-gray-400 my-4">or</p>
           <GoogleLoginButton />
         </div>
       </div>
