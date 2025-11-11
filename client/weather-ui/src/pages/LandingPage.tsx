@@ -40,7 +40,7 @@ const LandingPage = () => {
       </p>
       <Button
         label="Get Started"
-        className="bg-white text-indigo-800 font-semibold hover:bg-gray-200"
+        className="bg-white text-indigo-800 font-semibold hover:bg-gray-200 rounded-lg px-4 py-3"
         to="/signIn"
         buttonType="button"
       />

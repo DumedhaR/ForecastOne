@@ -12,12 +12,6 @@ const Dashboard = () => {
   // useEffect(() => {
   //   const fetchAllWeather = async () => {
   //     try {
-  //       const accessToken = await getAccessTokenSilently({
-  //         authorizationParams: {
-  //           audience: AUTH0_AUDIENCE,
-  //         },
-  //       });
-
   //       const weatherData = await getAllWeatherData(accessToken);
   //       setWeatherData(weatherData);
   //       setLoading(false);
@@ -26,7 +20,7 @@ const Dashboard = () => {
   //     }
   //   };
   //   fetchAllWeather();
-  // }, [setWeatherData, getAccessTokenSilently]);
+  // }, [setWeatherData]);
 
   return (
     <div className="flex flex-col gap-16">

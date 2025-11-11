@@ -31,7 +31,7 @@ export default function FadeSlider({ images }: HeroFadeSliderProps) {
       </div>
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/20 z-10" />
+      <div className="absolute inset-0 bg-black/10 z-10" />
     </div>
   );
 }
