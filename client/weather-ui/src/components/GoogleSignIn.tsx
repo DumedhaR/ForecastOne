@@ -8,7 +8,7 @@ const GoogleLoginButton = ({ className = "" }: GoogleLoginButtonProps) => {
   return (
     <a
       href={authUrl}
-      className={`flex w-full items-center justify-center bg-white text-gray-700 rounded-lg font-medium py-3 shadow-sm hover:bg-gray-100 transition-colors focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-blue-500 ${className}`}
+      className={`flex w-full items-center justify-center bg-white text-gray-700 rounded-lg font-medium py-3 shadow-md hover:bg-gray-50 transition-colors focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-blue-500 ${className}`}
       aria-label="Sign in with Google"
     >
       {/* Google G Logo */}

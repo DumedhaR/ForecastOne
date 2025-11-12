@@ -11,30 +11,40 @@ const images = [
 
 export default function SignInPage() {
   return (
-    <div className="w-full h-screen grid grid-cols-2">
-      <div className="bg-gray-100 w-full h-full">
+    <div className="w-full h-screen grid grid-cols-1 md:grid-cols-2">
+      {/* Left Section: slider with logo */}
+      <div className="relative w-full h-full bg-gray-100">
         <FadeSlider images={images} />
+
+        {/* Logo + header overlay */}
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-20">
+          <div className="flex flex-col items-center justify-center mb-12">
+            <img
+              src="/images/Logo4x.svg"
+              alt="LinkPi Logo"
+              className="w-20 h-20 mb-3 object-contain"
+            />
+            <h2 className="text-2xl font-semibold">Welcome to</h2>
+            <h1 className="text-3xl font-semibold">ForecastOne</h1>
+          </div>
+        </div>
       </div>
 
-      <div className="flex flex-col justify-center items-center">
-        <div>
-          <img
-            src="/images/Logo4x.svg"
-            alt="LinkPi Logo"
-            className="mx-auto mb-2 w-15 h-15 object-contain"
-          />
-          <h1 className="text-2xl font-semibold">
-            Welcome to <br />
-            ForecastOne
-          </h1>
-        </div>
-        <div className="w-full max-w-md text-center px-6">
-          <div className="flex flex-col items-center justify-center p-6 text-gray-800">
-            <p className="text-gray-400 mb-4">Signup to continue</p>
-            <SignUp />
-            <p className="text-gray-400 my-4">or</p>
-            <GoogleLoginButton />
+      {/* Right side (signup form) */}
+      <div className="flex flex-col justify-center items-center bg-gray-50">
+        <div className="w-full max-w-md px-8 py-10 rounded-2xl shadow-lg bg-white text-gray-800">
+          <h1 className="text-3xl font-semibold mb-2">Sign Up</h1>
+          <p className="text-gray-500 mb-6">to continue</p>
+
+          <SignUp />
+
+          <div className="flex items-center justify-center my-6">
+            <span className="w-1/5 border-b border-gray-300"></span>
+            <span className="text-gray-400 mx-2">or</span>
+            <span className="w-1/5 border-b border-gray-300"></span>
           </div>
+
+          <GoogleLoginButton />
         </div>
       </div>
     </div>

@@ -24,7 +24,7 @@ const Button = ({
 
   return (
     <button
-      className={`py-3 shadow-xl text-md transition duration-200 ${className}`}
+      className={`py-3 shadow-md text-md transition duration-200 ${className}`}
       onClick={handleClick}
       type={buttonType}
     >
