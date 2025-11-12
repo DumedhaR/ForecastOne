@@ -44,7 +44,7 @@ namespace api.Controllers
             var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
 
             if (!result.Succeeded)
-                return Unauthorized("Google authentication failed");
+                return Redirect("http://localhost:5173/signIn?error=google_auth_failed");
 
             var userCleims = result.Principal;
 
@@ -52,7 +52,7 @@ namespace api.Controllers
 
             if (authResult == null)
             {
-                return BadRequest("Google authentication failed.");
+                return BadRequest("http://localhost:5173/signIn?error=google_auth_failed");
             }
 
             // Redirect frontend with JWT

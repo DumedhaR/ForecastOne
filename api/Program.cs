@@ -25,14 +25,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 
 })
-.AddCookie(options =>
-{
-    options.Cookie.Name = "AuthToken";
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.Strict;
-    options.ExpireTimeSpan = TimeSpan.FromDays(7);
-})
+.AddCookie()
 .AddGoogle(googleOptions =>
 {
     var clientId = builder.Configuration["Authentication:Google:ClientId"];
@@ -50,32 +43,33 @@ builder.Services.AddAuthentication(options =>
     googleOptions.Scope.Add("email");
     googleOptions.SaveTokens = true;
     googleOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    var jwtKey = builder.Configuration["Jwt:Key"];
-    var jwtIssuer = builder.Configuration["Jwt:Issuer"];
-    var jwtAudience = builder.Configuration["Jwt:Audience"];
-
-    if (string.IsNullOrEmpty(jwtKey))
-        throw new ArgumentNullException(nameof(jwtKey), "Jwt key not configured.");
-    if (string.IsNullOrEmpty(jwtIssuer))
-        throw new ArgumentNullException(nameof(jwtIssuer), "jwt issuer not configured.");
-    if (string.IsNullOrEmpty(jwtAudience))
-        throw new ArgumentNullException(nameof(jwtAudience), "jwt audience not configured.");
-
-    var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
-
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtIssuer,
-        ValidAudience = jwtAudience,
-        IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
-    };
 });
+//.AddJwtBearer(options =>
+// {
+//     var jwtKey = builder.Configuration["Jwt:Key"];
+//     var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+//     var jwtAudience = builder.Configuration["Jwt:Audience"];
+
+//     if (string.IsNullOrEmpty(jwtKey))
+//         throw new ArgumentNullException(nameof(jwtKey), "Jwt key not configured.");
+//     if (string.IsNullOrEmpty(jwtIssuer))
+//         throw new ArgumentNullException(nameof(jwtIssuer), "jwt issuer not configured.");
+//     if (string.IsNullOrEmpty(jwtAudience))
+//         throw new ArgumentNullException(nameof(jwtAudience), "jwt audience not configured.");
+
+//     var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
+
+//     options.TokenValidationParameters = new TokenValidationParameters
+//     {
+//         ValidateIssuer = true,
+//         ValidateAudience = true,
+//         ValidateLifetime = true,
+//         ValidateIssuerSigningKey = true,
+//         ValidIssuer = jwtIssuer,
+//         ValidAudience = jwtAudience,
+//         IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
+//     };
+// });
 
 // Add authorization policies & roles
 builder.Services.AddAuthorizationBuilder()
@@ -93,7 +87,7 @@ builder.Services.Configure<OpenWeatherMapSettings>(
     builder.Configuration.GetSection("OpenWeatherMap"));
 
 // Dependency injection
-builder.Services.AddScoped<api.Repositories.Interfaces.IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICityRepository, CityRepository>();
@@ -111,15 +105,15 @@ builder.Services.AddHttpClient<IWeatherService, WeatherService>((serviceProvider
 builder.Services.AddMemoryCache();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// if (app.Environment.IsDevelopment())
+// {
+//     app.UseSwagger();
+//     app.UseSwaggerUI();
+// }
 
 // // Middleware pipeline
 // app.UseCookiePolicy(new CookiePolicyOptions
