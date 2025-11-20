@@ -26,7 +26,6 @@ const SignUp = () => {
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
-      {/** Form fields with placeholders instead of labels */}
       {["firstName", "lastName", "email", "password", "confirmPassword"].map(
         (field) => (
           <div key={field}>

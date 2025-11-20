@@ -1,6 +1,7 @@
 import GoogleLoginButton from "../components/GoogleSignIn";
 import FadeSlider from "../components/FadeSlider";
 import SignUp from "../components/LocalSignUp";
+import SignIn from "../components/LocalSignIn";
 
 const images = [
   "/images/cover1.jpg",
@@ -8,8 +9,14 @@ const images = [
   "/images/cover3.jpg",
   "/images/cover4.jpg",
 ];
-
-export default function SignInPage() {
+interface SignInOrUpProps {
+  isSignUp?: boolean;
+  withExternals?: boolean;
+}
+export default function SignInPage({
+  isSignUp = true,
+  withExternals = true,
+}: SignInOrUpProps) {
   return (
     <div className="w-full h-screen grid grid-cols-1 md:grid-cols-2">
       {/* slider with logo */}
@@ -33,18 +40,25 @@ export default function SignInPage() {
       {/* signup form */}
       <div className="flex flex-col justify-center items-center bg-gray-50">
         <div className="w-full max-w-md px-8 py-10 rounded-2xl shadow-lg bg-white text-gray-800">
-          <h1 className="text-3xl font-semibold mb-2">Sign Up</h1>
+          <h1 className="text-3xl font-semibold mb-2">
+            {isSignUp ? "Sign Up" : "Sign In"}
+          </h1>
           <p className="text-gray-500 mb-6">to continue</p>
 
-          <SignUp />
+          {isSignUp ? <SignUp /> : <SignIn />}
 
-          <div className="flex items-center justify-center my-6">
-            <span className="w-1/5 border-b border-gray-300"></span>
-            <span className="text-gray-400 mx-2">or</span>
-            <span className="w-1/5 border-b border-gray-300"></span>
-          </div>
-
-          <GoogleLoginButton />
+          {withExternals ? (
+            <>
+              <div className="flex items-center gap-2 my-6 mx-2.5">
+                <hr className="flex-grow border-gray-300" />
+                <span className="text-gray-400">or</span>
+                <hr className="flex-grow border-gray-300" />
+              </div>
+              <GoogleLoginButton />
+            </>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
     </div>
