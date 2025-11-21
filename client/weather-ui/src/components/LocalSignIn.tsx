@@ -1,5 +1,6 @@
-import Button from "./Button";
 import { useState, type ChangeEvent } from "react";
+import { Link } from "react-router-dom";
+import Button from "./Button";
 
 const fields = ["Email", "Password"].map((f) => f.toLowerCase());
 
@@ -38,6 +39,13 @@ const LocalSignIn = () => {
         label="Sign In"
         className="w-full bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg transition-colors mt-2"
       />
+
+      <p className="text-center text-sm text-gray-500">
+        Don't have an account?{" "}
+        <Link to="/SignUp" className="text-primary font-medium">
+          Sign up
+        </Link>
+      </p>
     </div>
   );
 };

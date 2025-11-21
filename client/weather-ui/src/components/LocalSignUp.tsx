@@ -1,4 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 import Button from "./Button";
 
 const SignUp = () => {
@@ -9,6 +10,14 @@ const SignUp = () => {
     password: "",
     confirmPassword: "",
   });
+
+  const fields = [
+    "firstName",
+    "lastName",
+    "email",
+    "password",
+    "confirmPassword",
+  ];
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -26,42 +35,45 @@ const SignUp = () => {
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
-      {["firstName", "lastName", "email", "password", "confirmPassword"].map(
-        (field) => (
-          <div key={field}>
-            <input
-              id={field}
-              name={field}
-              type={
-                field.toLowerCase().includes("password")
-                  ? "password"
-                  : field === "email"
-                  ? "email"
-                  : "text"
-              }
-              value={formData[field as keyof typeof formData]}
-              onChange={handleChange}
-              required
-              minLength={
-                field.toLowerCase().includes("password") ? 8 : undefined
-              }
-              maxLength={field.includes("Name") ? 20 : undefined}
-              placeholder={
-                field === "confirmPassword"
-                  ? "Confirm Password"
-                  : field.charAt(0).toUpperCase() + field.slice(1)
-              }
-              className="px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:border-gray-500 disabled:bg-gray-100 disabled:cursor-not-allowed w-full bg-white"
-            />
-          </div>
-        )
-      )}
+      {fields.map((field) => (
+        <div key={field}>
+          <input
+            id={field}
+            name={field}
+            type={
+              field.toLowerCase().includes("password")
+                ? "password"
+                : field === "email"
+                ? "email"
+                : "text"
+            }
+            value={formData[field as keyof typeof formData]}
+            onChange={handleChange}
+            required
+            minLength={field.toLowerCase().includes("password") ? 8 : undefined}
+            maxLength={field.includes("Name") ? 20 : undefined}
+            placeholder={
+              field === "confirmPassword"
+                ? "Confirm Password"
+                : field.charAt(0).toUpperCase() + field.slice(1)
+            }
+            className="px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:border-gray-500 disabled:bg-gray-100 disabled:cursor-not-allowed w-full bg-white"
+          />
+        </div>
+      ))}
 
       <Button
         buttonType="submit"
         label="Sign Up"
         className="w-full bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg transition-colors mt-2"
       />
+
+      <p className="text-center text-sm text-gray-500">
+        Already have an account?{" "}
+        <Link to="/SignIn" className="text-primary font-medium">
+          Sign in
+        </Link>
+      </p>
     </form>
   );
 };
